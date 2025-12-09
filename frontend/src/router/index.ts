@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -24,11 +25,12 @@ const router = createRouter({
   routes
 })
 
-// TODO: 添加路由守卫
 router.beforeEach((to, from, next) => {
-  // TODO: 实现认证检查
+  const userStore = useUserStore()
+  if (!userStore.isAuthenticated) {
+    userStore.ensureUser()
+  }
   next()
 })
 
 export default router
-

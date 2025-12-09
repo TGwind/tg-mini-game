@@ -1,30 +1,36 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { GameState } from '@/types/game'
+import { useUserStore } from './user'
 
 export const useGameStore = defineStore('game', () => {
   const isPlaying = ref(false)
   const currentScore = ref(0)
+  const bestScore = ref(0)
+  const userStore = useUserStore()
 
-  // TODO: 实现开始游戏
   function startGame() {
     isPlaying.value = true
     currentScore.value = 0
-    // TODO: 初始化游戏状态
   }
 
-  // TODO: 实现结束游戏
   async function endGame() {
     isPlaying.value = false
-    // TODO: 保存分数到后端
+    if (currentScore.value > bestScore.value) {
+      bestScore.value = currentScore.value
+    }
+
+    if (userStore.user && currentScore.value > userStore.user.score) {
+      userStore.user = {
+        ...userStore.user,
+        score: currentScore.value
+      }
+    }
   }
 
-  // TODO: 实现更新分数
   function updateScore(score: number) {
     currentScore.value = score
   }
 
-  // TODO: 实现重置游戏
   function resetGame() {
     isPlaying.value = false
     currentScore.value = 0
@@ -33,10 +39,10 @@ export const useGameStore = defineStore('game', () => {
   return {
     isPlaying,
     currentScore,
+    bestScore,
     startGame,
     endGame,
     updateScore,
     resetGame
   }
 })
-
