@@ -7,10 +7,13 @@ export const useGameStore = defineStore('game', () => {
   const currentScore = ref(0)
   const bestScore = ref(0)
   const userStore = useUserStore()
+  const timeLimit = ref(90)
+  const remainingTime = ref(0)
 
   function startGame() {
     isPlaying.value = true
     currentScore.value = 0
+    remainingTime.value = timeLimit.value
   }
 
   async function endGame() {
@@ -31,18 +34,26 @@ export const useGameStore = defineStore('game', () => {
     currentScore.value = score
   }
 
+  function updateTimeLeft(value: number) {
+    remainingTime.value = value
+  }
+
   function resetGame() {
     isPlaying.value = false
     currentScore.value = 0
+    remainingTime.value = 0
   }
 
   return {
     isPlaying,
     currentScore,
     bestScore,
+    timeLimit,
+    remainingTime,
     startGame,
     endGame,
     updateScore,
+    updateTimeLeft,
     resetGame
   }
 })
