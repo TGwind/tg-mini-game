@@ -1,23 +1,53 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { User } from '@/types/user'
+import { useTelegram } from '@/utils/telegram'
+
+const fallbackUser: User = {
+  telegram_id: 1,
+  username: 'demo_player',
+  first_name: 'Demo',
+  score: 0,
+  created_at: new Date().toISOString()
+}
 
 export const useUserStore = defineStore('user', () => {
   const user = ref<User | null>(null)
   const token = ref<string>('')
   const isAuthenticated = ref(false)
 
-  // TODO: 实现用户认证逻辑
+  function ensureUser() {
+    const { user: tgUser } = useTelegram()
+    if (tgUser) {
+      user.value = {
+        telegram_id: tgUser.id,
+        username: tgUser.username,
+        first_name: tgUser.first_name,
+        last_name: tgUser.last_name,
+        score: fallbackUser.score,
+        created_at: new Date().toISOString()
+      }
+      isAuthenticated.value = true
+      return
+    }
+
+    // fallback data for local development
+    user.value = fallbackUser
+    isAuthenticated.value = true
+  }
+
   async function authenticate(initData: string) {
-    // TODO: 调用认证 API
+    token.value = initData
+    ensureUser()
   }
 
-  // TODO: 实现获取用户信息
   async function fetchUserProfile() {
-    // TODO: 调用获取用户信息 API
+    if (!user.value) {
+      ensureUser()
+    }
+    return user.value
   }
 
-  // TODO: 实现登出逻辑
   function logout() {
     user.value = null
     token.value = ''
@@ -28,9 +58,9 @@ export const useUserStore = defineStore('user', () => {
     user,
     token,
     isAuthenticated,
+    ensureUser,
     authenticate,
     fetchUserProfile,
     logout
   }
 })
-

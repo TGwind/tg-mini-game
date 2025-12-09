@@ -1,12 +1,20 @@
+interface TelegramWebAppUser {
+  id: number
+  first_name: string
+  last_name?: string
+  username?: string
+  language_code?: string
+  photo_url?: string
+}
+
 interface TelegramWebApp {
   initData: string
-  initDataUnsafe: any
+  initDataUnsafe: { user?: TelegramWebAppUser }
   ready: () => void
   expand: () => void
   close: () => void
   MainButton: any
   BackButton: any
-  // TODO: 添加更多 Telegram WebApp API 类型
 }
 
 declare global {
@@ -24,11 +32,10 @@ export const useTelegram = () => {
     console.warn('Telegram WebApp is not available')
   }
 
-  // TODO: 实现 Telegram WebApp 功能封装
   return {
     tg,
     user: tg?.initDataUnsafe?.user,
-    initData: tg?.initData || '',
+    initData: tg?.initData || ''
   }
 }
 
@@ -38,6 +45,4 @@ export const initTelegramWebApp = () => {
     tg.ready()
     tg.expand()
   }
-  // TODO: 实现初始化逻辑
 }
-
